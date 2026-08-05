@@ -72,13 +72,7 @@ RUN apt-get update && \
     python3-numpy \
     curl \
     libjpeg62 \
-    # 自动化依赖
-    python3-xlib \
-    xclip \
-    x11-utils \
     python3-pip \
-    iw \
-    python3-tk \
     # VDI 核心解码与重定向依赖 2.18.27版本增加
     libwebpmux3 \
     libsnappy1v5 \
@@ -103,10 +97,6 @@ ENV LC_ALL=zh_CN.UTF-8
 
 
 # Install python dependencies
-ENV PLAYWRIGHT_DOWNLOAD_HOST=https://npmmirror.com/mirrors/playwright
-RUN pip3 install --no-cache-dir --default-timeout=100 -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com playwright==1.44.0 pyautogui==0.9.54 websocket-client==1.8.0 && \
-    playwright install chromium
-
 # 3. 安装 noVNC 和 websockify (从 GitHub)
 ARG GH_PROXY=https://gh-proxy.org/
 RUN git clone --depth 1 ${GH_PROXY}https://github.com/novnc/noVNC.git /opt/novnc && \
@@ -138,14 +128,13 @@ COPY config/supervisord.conf /etc/supervisor/supervisord.conf
 
 # Copy application code
 COPY scripts /app/scripts
-COPY automation /app/automation
 # COPY config /app/config  <-- Config is mounted at runtime to /config
 
 # Copy libraries
 COPY libs/libudev-shim.so /usr/local/lib/libudev-shim.so
 
 # Set permissions
-RUN chmod +x /app/scripts/*.sh /app/automation/*.sh
+RUN chmod +x /app/scripts/*.sh
 
 # Install fake systemctl
 COPY scripts/systemctl /usr/bin/systemctl
